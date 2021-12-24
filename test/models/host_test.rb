@@ -6,7 +6,7 @@ class HostTest < ActiveSupport::TestCase
     host = Host.new
     assert host.invalid?
     assert host.errors[:name].any?
-    assert product.errors[:fqdn].any?
+    assert host.errors[:fqdn].any?
   end
 
 end
