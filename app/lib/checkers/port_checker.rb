@@ -2,16 +2,18 @@ require 'socket'
 require 'timeout'
 
 module Checkers
-  class PortChecker
-    def initialize(ip, port, timeout)
-      @ip = ip
+  class TCPPortChecker
+    def initialize(address, port, timeout)
+      @address = address
       @port = port
       @timeout = timeout
     end
-    def port_open?
+
+
+    def is_open?
       Timeout::timeout(@timeout) do
         begin
-          TCPSocket.new(@ip, @port).close
+          TCPSocket.new(@address, @port).close
           true
         rescue Errno::ECONNREFUSED, Errno::EHOSTUNREACH
           false
