@@ -1,4 +1,6 @@
 class Pinger < ApplicationRecord
+  has_many :pinger_events
+
   validates_presence_of :name, :ping_type, :address, :interval, :timeout
 
   validates :address, format: {

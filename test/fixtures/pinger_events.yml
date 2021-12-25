@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  pinger_id: 1
+  reason: MyString
+  status: 1
+
+two:
+  pinger_id: 1
+  reason: MyString
+  status: 1
