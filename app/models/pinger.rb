@@ -1,7 +1,7 @@
 class Pinger < ApplicationRecord
   enum pinger_type: [ :simple_tcp_port_check ]
 
-  has_many :pinger_events
+  has_many :pinger_events, dependent: :destroy
 
   validates_presence_of :name, :ping_type, :address, :interval, :timeout
 
