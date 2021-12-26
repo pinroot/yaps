@@ -7,7 +7,7 @@ class Pinger < ApplicationRecord
   enum pinger_type: [ :simple_tcp_port_check ]
 
   has_many :pinger_events, dependent: :destroy
-  has_many :events, foreign_key: "pinger_id", class_name: "PingerEvent"
+  has_many :events, foreign_key: "pinger_id", class_name: "PingerEvent", dependent: :destroy
 
   validates_presence_of :name, :address, :interval, :timeout, :pinger_type
 
