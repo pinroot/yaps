@@ -12,7 +12,8 @@ module Yaps
     config.load_defaults 7.0
 
     config.after_initialize do
-      if defined?(Rails::Server) && ActiveRecord::Base.connection.table_exists?('pingers')
+      # if defined?(Rails::Server) && 
+      if ActiveRecord::Base.connection.table_exists?('pingers')
         Pinger.all.each(&:create_pinger_scheduler)
       end
     end
