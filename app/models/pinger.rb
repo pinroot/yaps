@@ -1,8 +1,8 @@
 class Pinger < ApplicationRecord
 
-  after_create :create_pinger_job
-  after_update :update_pinger_job
-  after_destroy :destroy_pinger_job
+  after_create :create_pinger_scheduler
+  after_update :update_pinger_scheduler
+  after_destroy :destroy_pinger_scheduler
 
   enum pinger_type: [ :simple_tcp_port_check ]
 
@@ -16,14 +16,19 @@ class Pinger < ApplicationRecord
     message: 'must be a FQDN'
   }
 
-  def create_pinger_job
-    SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
+  def create_pinger_scheduler
+    scheduler = Rufus::Scheduler.singleton.every "#{interval}s", job: true do
+      SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
+    end
+    update_columns(scheduler_job_id: scheduler.job_id)
   end
 
-  def update_pinger_job
+  def update_pinger_scheduler
   end
 
-  def destroy_pinger_job
+  def destroy_pinger_scheduler
+    scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id) if scheduler_job_id.presence
+    scheduler.unschedule if scheduler
   end
 
 end
