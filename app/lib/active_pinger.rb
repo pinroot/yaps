@@ -6,15 +6,18 @@ module ActivePinger
       @conn_timeout = conn_timeout
       @connection = Net::Ping::TCP.new(@address, @port, @conn_timeout)
     end
-    def is_port_up?
+    def up?
       if @connection.ping
         true
       else
         false
       end
     end
-    def time
-      @connection.ping
+    def duration
+      @connection.duration
+    end
+    def exception
+      @connection.exception
     end
   end
 

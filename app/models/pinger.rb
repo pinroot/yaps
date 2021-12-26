@@ -16,9 +16,6 @@ class Pinger < ApplicationRecord
     message: 'must be a FQDN'
   }
 
-  def simple_tcp_port_check
-  end
-
   def create_pinger_job
     # let's try to create some ping
     # TCP Pinger example:
@@ -27,11 +24,11 @@ class Pinger < ApplicationRecord
     if pinger_type == "simple_tcp_port_check"
       pinger = ActivePinger::TCP.new(address, port, timeout)
       event = events.build
-      if pinger.is_port_up?
-        event.reason="tcp port is up"
+      if pinger.up?
+        event.reason="nil"
         event.status="up"
       else
-        event.reason="tcp port is down"
+        event.reason=pinger.exception
         event.status="down"
       end
       event.save
