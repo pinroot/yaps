@@ -7,6 +7,7 @@ class Pinger < ApplicationRecord
   enum pinger_type: [ :simple_tcp_port_check ]
 
   has_many :pinger_events, dependent: :destroy
+  has_many :events, foreign_key: "pinger_id", class_name: "PingerEvent"
 
   validates_presence_of :name, :address, :interval, :timeout, :pinger_type
 
@@ -22,7 +23,7 @@ class Pinger < ApplicationRecord
 
     if pinger_type == "simple_tcp_port_check"
       pinger = ActivePinger::TCP.new(address, port, timeout)
-      event = pinger_events.build
+      event = events.build
       if pinger.is_port_up?
         event.reason="tcp port is up"
         event.status="up"
