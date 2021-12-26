@@ -1,8 +1,8 @@
 class Pinger < ApplicationRecord
 
-  after_create :create_ping_job
-  after_update :update_ping_job
-  after_destroy :destroy_ping_job
+  after_create :create_pinger_job
+  after_update :update_pinger_job
+  after_destroy :destroy_pinger_job
 
   enum pinger_type: [ :simple_tcp_port_check ]
 
@@ -16,7 +16,10 @@ class Pinger < ApplicationRecord
     message: 'must be a FQDN'
   }
 
-  def create_ping_job
+  def simple_tcp_port_check
+  end
+
+  def create_pinger_job
     # let's try to create some ping
     # TCP Pinger example:
     # ActivePinger::TCP.new("google.com", 80, 1)
@@ -37,10 +40,10 @@ class Pinger < ApplicationRecord
     end
   end
 
-  def update_ping_job
+  def update_pinger_job
   end
 
-  def destroy_ping_job
+  def destroy_pinger_job
   end
 
 end
