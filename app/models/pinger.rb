@@ -17,20 +17,7 @@ class Pinger < ApplicationRecord
   }
 
   def create_pinger_job
-    if pinger_type == "simple_tcp_port_check"
-      pinger = ActivePinger::TCP.new(address, port, timeout)
-      event = events.build
-      if pinger.up?
-        event.reason="nil"
-        event.status="up"
-      else
-        event.reason=pinger.exception
-        event.status="down"
-      end
-      event.save
-    else
-      # no pinger selected 
-    end
+    SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
   end
 
   def update_pinger_job
