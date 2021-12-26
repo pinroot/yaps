@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_25_163425) do
+ActiveRecord::Schema.define(version: 2021_12_26_020411) do
 
   create_table "pinger_events", force: :cascade do |t|
     t.integer "pinger_id"
@@ -28,6 +28,7 @@ ActiveRecord::Schema.define(version: 2021_12_25_163425) do
     t.integer "timeout"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.integer "port"
   end
 
 end
