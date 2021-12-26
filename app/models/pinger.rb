@@ -17,10 +17,6 @@ class Pinger < ApplicationRecord
   }
 
   def create_pinger_job
-    # let's try to create some ping
-    # TCP Pinger example:
-    # ActivePinger::TCP.new("google.com", 80, 1)
-
     if pinger_type == "simple_tcp_port_check"
       pinger = ActivePinger::TCP.new(address, port, timeout)
       event = events.build
