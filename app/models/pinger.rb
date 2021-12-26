@@ -20,18 +20,19 @@ class Pinger < ApplicationRecord
     # TCP Pinger example:
     # ActivePinger::TCP.new("google.com", 80, 1)
 
-    pinger = ActivePinger::TCP.new(address, port, timeout) if pinger_type == "simple_tcp_port_check"
-
-    event = pinger_events.build
-
-    if pinger.is_port_up?
-      event.reason="tcp port is up"
-      event.status="up"
+    if pinger_type == "simple_tcp_port_check"
+      pinger = ActivePinger::TCP.new(address, port, timeout)
+      event = pinger_events.build
+      if pinger.is_port_up?
+        event.reason="tcp port is up"
+        event.status="up"
+      else
+        event.reason="tcp port is down"
+        event.status="down"
+      end
       event.save
     else
-      event.reason="tcp port is down"
-      event.status="down"
-      event.save      
+      # no pinger selected 
     end
   end
 
