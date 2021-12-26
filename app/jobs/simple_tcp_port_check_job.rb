@@ -39,27 +39,6 @@ class SimpleTcpPortCheckJob
     Rails.logger.info "Previous status #{get_previous_status}"
     Rails.logger.info "Current status #{get_current_status}"
 
-    #event = pinger.events.build
-
-    #if check.up?
-    #  event.reason="nil"
-    #  event.status="up"
-    #else
-    #  event.reason=check.exception 
-    #  event.status="down"
-    #end
-    # 
-    #if pinger.events.empty?
-    #  event.save!
-    #end
-
-    #event.create! if pinger.events.empty? or pinger.events.last.status != event.status
-
-    #if pinger.events.empty?
-    #  event.save
-    #else
-    #  event.save if pinger.events.last.status != event.status
-    #end
   end
 
 end
