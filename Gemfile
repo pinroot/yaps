@@ -77,5 +77,6 @@ end
 
 # extra
 
-gem "net-ping"
+gem 'net-ping'
 gem 'sucker_punch', '~> 3.0'
+gem 'rufus-scheduler'
