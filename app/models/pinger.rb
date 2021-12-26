@@ -20,7 +20,12 @@ class Pinger < ApplicationRecord
     scheduler = Rufus::Scheduler.singleton.every "#{interval}s", job: true do
       SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
     end
-    update_columns(scheduler_job_id: scheduler.job_id)
+    if scheduler
+      update_columns(scheduler_job_id: scheduler.job_id)
+      Rails.logger.info "Rufus Scheduled Job: '#{scheduler.job_id}'"
+    else
+      Rails.logger.info "Rufus couldn't schedule the job, something wrong"
+    end
   end
 
   def update_pinger_scheduler
@@ -28,7 +33,12 @@ class Pinger < ApplicationRecord
 
   def destroy_pinger_scheduler
     scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id) if scheduler_job_id.presence
-    scheduler.unschedule if scheduler
+    if scheduler
+      scheduler.unschedule
+      Rails.logger.info "Rufus Unscheduled Job: '#{scheduler_job_id}'"
+    else
+      Rails.logger.info "Rufus couldn't unschedule the job: '#{scheduler_job_id}'"
+    end
   end
 
 end
