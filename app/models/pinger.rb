@@ -40,6 +40,9 @@ class Pinger < ApplicationRecord
   end
 
   def update_pinger_scheduler
+    if previous_changes.has_key?('interval')
+      Rails.logger.info "Interval has been changed"
+    end
   end
 
   def destroy_pinger_scheduler
