@@ -32,6 +32,7 @@ class SimpleTcpPortCheckJob
         event = @pinger.events.build(reason: "Connection established", status: current_status)
       end
       event.save if event
+      @pinger.update_columns(pinged_at: Time.now)
     end    
 
     build_event
