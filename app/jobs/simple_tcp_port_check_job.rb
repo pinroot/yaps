@@ -7,7 +7,7 @@ class SimpleTcpPortCheckJob
     
     @check = ActivePinger::TCP.new(@pinger.address, @pinger.port, @pinger.timeout)    
 
-    def get_current_status
+    def current_status
       if @check.up?
         status = "up"
       else
@@ -16,7 +16,7 @@ class SimpleTcpPortCheckJob
       return status
     end
 
-    def get_previous_status
+    def previous_status
       if @pinger.events.any?
         status = @pinger.events.last.status
       else
@@ -26,18 +26,18 @@ class SimpleTcpPortCheckJob
     end
 
     def build_event
-      if get_current_status == "down" and get_previous_status != get_current_status
-        event = @pinger.events.build(reason: @check.exception, status: get_current_status)
-      elsif get_current_status == "up" and get_previous_status != get_current_status
-        event = @pinger.events.build(reason: "Connection established", status: get_current_status)
+      if current_status == "down" and previous_status != current_status
+        event = @pinger.events.build(reason: @check.exception, status: current_status)
+      elsif current_status == "up" and previous_status != current_status
+        event = @pinger.events.build(reason: "Connection established", status: current_status)
       end
       event.save if event
     end    
 
     build_event
 
-    Rails.logger.info "Previous status #{get_previous_status}"
-    Rails.logger.info "Current status #{get_current_status}"
+    Rails.logger.info "Previous status #{previous_status}"
+    Rails.logger.info "Current status #{current_status}"
 
   end
 

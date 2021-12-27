@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_26_081536) do
+ActiveRecord::Schema.define(version: 2021_12_27_044154) do
 
   create_table "pinger_events", force: :cascade do |t|
     t.integer "pinger_id"
@@ -30,6 +30,8 @@ ActiveRecord::Schema.define(version: 2021_12_26_081536) do
     t.integer "port"
     t.string "scheduler_job_id"
     t.integer "pinger_type"
+    t.boolean "enabled", default: true
+    t.datetime "pinged_at", precision: 6
   end
 
 end

@@ -23,6 +23,10 @@ class Pinger < ApplicationRecord
     message: 'must be a FQDN'
   }
 
+  def scheduler
+    scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id)
+  end
+
   def create_pinger_scheduler
     scheduler = Rufus::Scheduler.singleton.every "#{interval}s", job: true do
       SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
