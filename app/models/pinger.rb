@@ -33,16 +33,33 @@ class Pinger < ApplicationRecord
     end
     if scheduler
       update_columns(scheduler_job_id: scheduler.job_id)
-      Rails.logger.info "Rufus Scheduled Job: '#{scheduler.job_id}'"
+      Rails.logger.info "Rufus has been scheduled the job: '#{scheduler.job_id}'"
     else
       Rails.logger.info "Rufus couldn't schedule the job, something wrong"
     end
   end
 
   def update_pinger_scheduler
-    if previous_changes.has_key?('interval')
-      Rails.logger.info "Interval has been changed"
+    scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id) if scheduler_job_id.presence
+    if previous_changes.has_key?('enabled')
+      if enabled
+        create_pinger_scheduler
+        Rails.logger.info "Pinger has been enabled: Rufus Scheduled Job #{scheduler_job_id}"
+      else
+        scheduler.unschedule
+        Rails.logger.info "Pinger has been disabled: Rufus Unscheduled Job #{scheduler_job_id}"
+        update_columns(scheduler_job_id: nil)  
+      end
     end
+
+    if previous_changes.has_key?('interval') or previous_changes.has_key?('timeout')
+      Rails.logger.info "Interval or timeout has been changed"
+      scheduler.unschedule
+      Rails.logger.info "Rufus Unscheduled Job #{scheduler_job_id}"
+      update_columns(scheduler_job_id: nil)
+      create_pinger_scheduler
+    end
+
   end
 
   def destroy_pinger_scheduler
