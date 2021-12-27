@@ -32,13 +32,14 @@ class SimpleTcpPortCheckJob
         event = @pinger.events.build(reason: "Connection established", status: current_status)
       end
       event.save if event
+      Rails.logger.info "The new event with status '#{previous_status}' was created for pinger ##{@pinger.id}" if event
       @pinger.update_columns(pinged_at: Time.now)
     end    
 
     build_event
 
-    Rails.logger.info "Previous status #{previous_status}"
-    Rails.logger.info "Current status #{current_status}"
+    Rails.logger.info "Previous status was '#{previous_status}'"
+    Rails.logger.info "Current status is '#{current_status}'"
 
   end
 
