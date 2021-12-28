@@ -3,6 +3,9 @@ class Pinger < ApplicationRecord
   # 1) MINIMUM\MAXIMUM INTERVAL MUST STORED IN APP SETTINGS
   # 2) STORAGE DEPTH FOR EVENTS (IN DAYS) MUST STORED IN APP SETTINGS
 
+  valid_ip_address_regex = /^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])$/
+  valid_hostname_regex = /^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\-]*[a-zA-Z0-9])\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9\-]*[A-Za-z0-9])$/
+
   after_create :create_pinger_scheduler
   after_update :update_pinger_scheduler
   after_destroy :destroy_pinger_scheduler
@@ -14,23 +17,14 @@ class Pinger < ApplicationRecord
 
   validates_presence_of :name, :address, :interval, :timeout, :pinger_type
 
-  validates :interval, comparison: { greater_than_or_equal_to: 60 } # 1 minute
+  validates :interval, comparison: { greater_than_or_equal_to: 10 } # 10 seconds
   validates :interval, comparison: { less_than_or_equal_to: 3600 } # 1 hour
 
   validates :address, format: {
-    with:    %r{[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$}i, multiline: true,
-    message: 'must be a FQDN'
+    with:    /[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$|(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/, 
+    multiline: true,
+    message: 'must be a FQDN or IP'
   }
-
-  def enable
-    enabled = true
-    save
-  end
-
-  def disable
-    enabled = false
-    save
-  end
 
   def status
     events.last.status
@@ -54,6 +48,7 @@ class Pinger < ApplicationRecord
 
   def update_pinger_scheduler
     scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id) if scheduler_job_id.presence
+
     if previous_changes.has_key?('enabled')
       if enabled
         create_pinger_scheduler
@@ -67,6 +62,14 @@ class Pinger < ApplicationRecord
 
     if previous_changes.has_key?('interval') or previous_changes.has_key?('timeout')
       Rails.logger.info "Interval or timeout has been changed"
+      scheduler.unschedule
+      Rails.logger.info "Rufus Unscheduled Job #{scheduler_job_id}"
+      update_columns(scheduler_job_id: nil)
+      create_pinger_scheduler
+    end
+
+    if previous_changes.has_key?('address')
+      Rails.logger.info "The address has been changed"
       scheduler.unschedule
       Rails.logger.info "Rufus Unscheduled Job #{scheduler_job_id}"
       update_columns(scheduler_job_id: nil)
