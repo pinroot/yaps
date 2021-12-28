@@ -27,9 +27,11 @@ class SimpleTcpPortCheckJob
 
     def build_event
       if current_status == "down" and previous_status != current_status
-        event = @pinger.events.build(reason: @check.exception, status: current_status)
+        event = @pinger.events.build(reason: @check.exception)
+        event.down!
       elsif current_status == "up" and previous_status != current_status
-        event = @pinger.events.build(reason: "Connection established", status: current_status)
+        event = @pinger.events.build(reason: "Connection allowed")
+        event.up!
       end
       event.save if event
       Rails.logger.info "The new event with status '#{previous_status}' was created for pinger ##{@pinger.id}" if event

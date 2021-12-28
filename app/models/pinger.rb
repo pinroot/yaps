@@ -3,7 +3,6 @@ class Pinger < ApplicationRecord
   # 1) MINIMUM\MAXIMUM INTERVAL MUST STORED IN APP SETTINGS
   # 2) STORAGE DEPTH FOR EVENTS (IN DAYS) MUST STORED IN APP SETTINGS
 
-
   after_create :create_pinger_scheduler
   after_update :update_pinger_scheduler
   after_destroy :destroy_pinger_scheduler
@@ -22,6 +21,20 @@ class Pinger < ApplicationRecord
     with:    %r{[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$}i, multiline: true,
     message: 'must be a FQDN'
   }
+
+  def enable
+    enabled = true
+    save
+  end
+
+  def disable
+    enabled = false
+    save
+  end
+
+  def status
+    events.last.status
+  end
 
   def scheduler
     scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id)
