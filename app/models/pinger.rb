@@ -65,8 +65,15 @@ class Pinger < ApplicationRecord
       create_pinger_scheduler
     end
 
+    # !TODO:
+    # User must be notified that the change
+    # of the address will delete all previous
+    # events associated with the previous address  
     if previous_changes.has_key?('address')
       Rails.logger.info "The address has been changed"
+      events.destroy_all
+      update_columns(pinged_at: nil)
+      Rails.logger.info "Remove previous address events"
       scheduler.unschedule
       Rails.logger.info "Rufus Unscheduled Job #{scheduler_job_id}"
       update_columns(scheduler_job_id: nil)
