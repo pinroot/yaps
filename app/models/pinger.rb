@@ -50,10 +50,12 @@ class Pinger < ApplicationRecord
       if enabled
         create_pinger_scheduler
         Rails.logger.info "Pinger has been enabled: Rufus Scheduled Job #{scheduler_job_id}"
+        events.build(status: "enabled", reason: "by user")
       else
         scheduler.unschedule
         Rails.logger.info "Pinger has been disabled: Rufus Unscheduled Job #{scheduler_job_id}"
         update_columns(scheduler_job_id: nil)  
+        events.build(status: "disabled", reason: "by user")
       end
     end
 
