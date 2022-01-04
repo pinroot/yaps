@@ -15,7 +15,7 @@ class SimpleTcpPortCheckJob
       else
         event = @pinger.events.build(status: "unknown", reason: "UNKNOWN")
         # LOG
-        Rails.logger.info "INSPECT: #{@check.inspect}"
+        Rails.logger.info "INSPECT FROM EVENT ELSE: #{@check.inspect}"
       end
       event.save
     end

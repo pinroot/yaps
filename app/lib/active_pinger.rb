@@ -7,14 +7,14 @@ module ActivePinger
       @connection = Net::Ping::TCP.new(@address, @port, @conn_timeout)
     end
     def up?
-      if @connection.ping
+      if @connection.ping and @connection.exception.nil?
         true
       else
         false
       end
     end
     def down?
-      if @connection.ping
+      if @connection.ping and @connection.exception.nil?
         false
       else
         true
@@ -33,10 +33,10 @@ module ActivePinger
         return "down"
       elsif @connection.ping == nil
         return "down"
-        Rails.logger.info "INSPECT: #{@connection.inspect}"
+        Rails.logger.info "INSPECT FROM NIL: #{@connection.inspect}"
       else
         return "unknown"
-        Rails.logger.info "INSPECT: #{@connection.inspect}"
+        Rails.logger.info "INSPECT FROM UNKNOWN: #{@connection.inspect}"
       end
     end
   end
