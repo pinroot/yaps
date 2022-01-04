@@ -31,6 +31,8 @@ module ActivePinger
         return "up"
       elsif down?
         return "down"
+      elsif @connection.ping == nil
+        return "down"
       else
         return "unknown"
       end
