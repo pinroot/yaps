@@ -14,6 +14,8 @@ class SimpleTcpPortCheckJob
         event = @pinger.events.build(status: "up", reason: "Connection allowed")
       else
         event = @pinger.events.build(status: "unknown", reason: "UNKNOWN")
+        # LOG
+        Rails.logger.info "INSPECT: #{@check.inspect}"
       end
       event.save
     end

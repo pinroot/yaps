@@ -33,8 +33,10 @@ module ActivePinger
         return "down"
       elsif @connection.ping == nil
         return "down"
+        Rails.logger.info "INSPECT: #{@connection.inspect}"
       else
         return "unknown"
+        Rails.logger.info "INSPECT: #{@connection.inspect}"
       end
     end
   end
