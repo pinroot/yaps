@@ -32,6 +32,7 @@ class Pinger < ApplicationRecord
   end
 
   def create_pinger_scheduler
+    events.build(status: "created", reason: "by app")
     scheduler = Rufus::Scheduler.singleton.every "#{interval}s", job: true do
       SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
     end
@@ -50,12 +51,12 @@ class Pinger < ApplicationRecord
       if enabled
         create_pinger_scheduler
         Rails.logger.info "Pinger has been enabled: Rufus Scheduled Job #{scheduler_job_id}"
-        events.build(status: "enabled", reason: "by user")
+        events.build(status: "enabled", reason: "from app")
       else
         scheduler.unschedule
         Rails.logger.info "Pinger has been disabled: Rufus Unscheduled Job #{scheduler_job_id}"
         update_columns(scheduler_job_id: nil)  
-        events.build(status: "disabled", reason: "by user")
+        events.build(status: "disabled", reason: "from app")
       end
     end
 

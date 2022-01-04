@@ -13,11 +13,27 @@ module ActivePinger
         false
       end
     end
+    def down?
+      if @connection.ping
+        false
+      else
+        true
+      end
+    end
     def duration
       @connection.duration
     end
     def exception
       @connection.exception
+    end
+    def status
+      if up?
+        return "up"
+      elsif down?
+        return "down"
+      else
+        return "unknown"
+      end
     end
   end
 
