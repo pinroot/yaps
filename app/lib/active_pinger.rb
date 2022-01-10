@@ -1,44 +1,60 @@
+require 'socket'
+require 'timeout'
+
 module ActivePinger
   class TCP
     def initialize(address, port, conn_timeout)
       @address = address
       @port = port
       @conn_timeout = conn_timeout
-      @connection = Net::Ping::TCP.new(@address, @port, @conn_timeout)
     end
+
+    def check(ip, port, timeout)
+      checked_at = Time.now
+      begin
+        Timeout::timeout(timeout) do
+          begin
+            socket = TCPSocket.new(ip, port)
+            return {status: true, exception: nil, checked_at: checked_at }
+          rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, SocketError => e
+            return {status: false, exception: e.to_s, checked_at: checked_at}
+          end
+        end
+      rescue Timeout::Error => e
+        return {status: false, exception: e.to_s, checked_at: checked_at}
+      end
+    end
+
     def up?
-      if @connection.ping and @connection.exception.nil?
-        true
-      else
-        false
-      end
+      check(@address, @port, @conn_timeout)[:status]
     end
+
     def down?
-      if @connection.ping and @connection.exception.nil?
-        false
-      else
-        true
-      end
+      !check(@address, @port, @conn_timeout)[:status]
     end
-    def duration
-      @connection.duration
-    end
+
     def exception
-      @connection.exception
+      check(@address, @port, @conn_timeout)[:exception]
     end
+
+    def time_diff_milli(start, finish)
+      (finish - start) * 1000.0
+    end
+
+    def duration
+      time_diff_milli(check(@address, @port, @conn_timeout)[:checked_at], Time.now)
+    end
+
     def status
       if up?
         return "up"
       elsif down?
         return "down"
-      elsif @connection.ping == nil
-        return "down"
-        Rails.logger.info "INSPECT FROM NIL: #{@connection.inspect}"
       else
         return "unknown"
-        Rails.logger.info "INSPECT FROM UNKNOWN: #{@connection.inspect}"
       end
     end
+
   end
 
 end
