@@ -1,34 +1,20 @@
 class SimpleTcpPortCheckJob
   include SuckerPunch::Job
-
   def perform(pinger_id)
-
     @pinger = Pinger.find(pinger_id)
-    
-    @check = ActivePinger::TCP.new(@pinger.address, @pinger.port, @pinger.timeout)    
-
-    def build_event
-      if @check.down?
-        event = @pinger.events.build(status: "down", reason: @check.exception)
-      elsif @check.up?
-        event = @pinger.events.build(status: "up", reason: "Connection allowed")
+    @check = ActivePinger::TCP.new(@pinger.address, @pinger.port, @pinger.timeout)
+    def set_reason
+      if @check.up?
+        return "Connection allowed"
+      elsif @check.down?
+        return @check.exception
       else
-        event = @pinger.events.build(status: "unknown", reason: "UNKNOWN")
-        # LOG
-        Rails.logger.info "UNKNOWN REASON: #{@check.inspect}"
+        return "Unknown"
       end
-      event.save
     end
-
-    def update_pinged_at
-      @pinger.update_columns(pinged_at: Time.now)
+    if @check.status != @pinger.events.last.status
+      @pinger.events.build(status: @check.status, reason: set_reason).save 
     end
-
-    previous_event = @pinger.events.last.id
-
-    build_event if @check.status != @pinger.events.find(previous_event).status
-    update_pinged_at
-
+    @pinger.update_columns(pinged_at: Time.now)
   end
-
 end
