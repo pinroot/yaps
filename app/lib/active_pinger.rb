@@ -14,7 +14,7 @@ module ActivePinger
       begin
         Timeout::timeout(timeout) do
           begin
-            socket = TCPSocket.new(ip, port, connect_timeout: 0.5)
+            socket = TCPSocket.new(ip, port, connect_timeout: 0.1)
             return {status: true, exception: nil, checked_at: checked_at }
           rescue Errno::ECONNREFUSED, Errno::ETIMEDOUT, SocketError => e
             return {status: false, exception: e.to_s, checked_at: checked_at}
