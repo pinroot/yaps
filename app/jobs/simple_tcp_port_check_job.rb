@@ -24,7 +24,9 @@ class SimpleTcpPortCheckJob
       @pinger.update_columns(pinged_at: Time.now)
     end
 
-    build_event if @check.status != @pinger.events.last.status
+    previous_event = @pinger.events.last.id
+
+    build_event if @check.status != @pinger.events.find(previous_event).status
     update_pinged_at
 
   end
