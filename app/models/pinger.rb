@@ -15,7 +15,7 @@ class Pinger < ApplicationRecord
   validates_presence_of :name, :address, :interval, :timeout, :pinger_type
 
   validates :interval, comparison: { greater_than_or_equal_to: 10 } # 10 seconds
-  validates :interval, comparison: { less_than_or_equal_to: 3600 } # 1 hour
+  validates :interval, comparison: { less_than_or_equal_to: 3600 } # 1 hour seconds
 
   validates :address, format: {
     with:    /[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$|(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/, 
