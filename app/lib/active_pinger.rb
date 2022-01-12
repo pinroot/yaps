@@ -1,21 +1,17 @@
+require 'socket'
 require 'timeout'
-require 'async/io'
-require 'async/await'
-require 'async/semaphore'
 require 'resolv'
 
 module ActivePinger
   class TCP  
-    include Async::Await
-    include Async::IO
-    RESOLVER = Resolv::DNS.new
+    RESOLVER_NAMESERVERS = ['8.8.8.8', '8.8.4.4']
     RESOLVER_TIMEOUT = 0.2
+    RESOLVER = Resolv::DNS.new(nameserver: RESOLVER_NAMESERVERS)
 
     def initialize(host, port, conn_timeout)
       @host         = host
       @port         = port
       @conn_timeout = conn_timeout
-      @semaphore    = Async::Semaphore.new(1024)
     end
 
     def get_ipaddress(fqdn, conn_timeout)
@@ -24,43 +20,44 @@ module ActivePinger
     end
 
     def check_port(host, port, conn_timeout)
-      checked_at   = Time.now
+      checked_at = Time.now
       begin
         resolved_host = get_ipaddress(host, RESOLVER_TIMEOUT)
+        socket      = Socket.new(:INET, :STREAM)
+        remote_addr = Socket.sockaddr_in(port, resolved_host)
+ 
         begin
-          Timeout.timeout(conn_timeout) do
-            Async::IO::Endpoint.tcp(resolved_host, port).connect do |peer|
-              peer.close
-              return { status: true, exception: nil, checked_at: checked_at }
-            end
-          end
-        rescue Errno::ECONNREFUSED, Async::TimeoutError, SocketError, Timeout::Error => e
-          return {status: false, exception: e.to_s, checked_at: checked_at }
-        rescue Errno::EMFILE
-          sleep conn_timeout
-          retry
+          socket.connect_nonblock(remote_addr)
+        rescue Errno::EINPROGRESS
+        end
+
+        _, sockets, _ = IO.select(nil, [socket], nil, conn_timeout)
+ 
+        if sockets
+          return { status: true, exception: nil, checked_at: checked_at }
+        else
+          return { status: false, exception: "Connection Refused", checked_at: checked_at }
         end
       rescue Resolv::ResolvError => e
-        return {status: false, exception: e.to_s, checked_at: checked_at }
+        return { status: false, exception: e.to_s, checked_at: checked_at }
       end
     end
 
-    async def check(host: @host, port: @port, timeout: @conn_timeout)
-      @semaphore.async do
-        check_port(host, port, timeout)
-      end
+    def check(host: @host, port: @port, timeout: @conn_timeout)
+      check_port(host, port, timeout)
     end
+
 
     def up?
-      check.result.result[:status]
+      check[:status]
     end
 
     def down?
-      !check.result.result[:status]
+      !check[:status]
     end
 
     def exception
-      check.result.result[:exception]
+      check[:exception]
     end
 
     def time_diff_milli(start, finish)
@@ -68,7 +65,7 @@ module ActivePinger
     end
 
     def duration
-      time_diff_milli(check.result.result[:checked_at], Time.now)
+      time_diff_milli(check[:checked_at], Time.now)
     end
 
     def status

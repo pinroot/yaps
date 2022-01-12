@@ -16,9 +16,12 @@ class SimpleTcpPortCheckJob
         return "Unknown"
       end
     end
+
     if @checker.status != @last_event.status
       @pinger.events.build(status: @checker.status, reason: set_reason).save 
     end
+
     @pinger.update_columns(pinged_at: Time.now)
+
   end
 end
