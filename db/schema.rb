@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_12_27_044154) do
+ActiveRecord::Schema.define(version: 2022_01_13_081657) do
 
   create_table "pinger_events", force: :cascade do |t|
     t.integer "pinger_id"
@@ -18,6 +18,7 @@ ActiveRecord::Schema.define(version: 2021_12_27_044154) do
     t.integer "status"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.float "response_time"
   end
 
   create_table "pingers", force: :cascade do |t|

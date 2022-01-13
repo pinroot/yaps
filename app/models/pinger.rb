@@ -7,15 +7,18 @@ class Pinger < ApplicationRecord
   after_update :update_pinger_scheduler
   after_destroy :destroy_pinger_scheduler
 
-  enum pinger_type: [ :simple_tcp_port_check ]
+  enum pinger_type: [ :simple_tcp_port_check, :ping ]
 
   has_many :pinger_events, dependent: :destroy
   has_many :events, foreign_key: "pinger_id", class_name: "PingerEvent", dependent: :destroy
 
   validates_presence_of :name, :address, :interval, :timeout, :pinger_type
 
-  validates :interval, comparison: { greater_than_or_equal_to: 5 } # 10 seconds
+  validates :interval, comparison: { greater_than_or_equal_to: 10 } # 10 seconds
   validates :interval, comparison: { less_than_or_equal_to: 3600 } # 1 hour seconds
+
+  validates :timeout, comparison: { greater_than_or_equal_to: 1 } # 10 seconds
+  validates :timeout, comparison: { less_than_or_equal_to: 5 } # 1 hour seconds
 
   validates :address, format: {
     with:    /[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,6}(:[0-9]{1,5})?(\/.*)?$|(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/, 

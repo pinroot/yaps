@@ -2,10 +2,10 @@ require 'socket'
 require 'timeout'
 require 'resolv'
 
-module ActivePinger
-  class TCP  
-    RESOLVER_NAMESERVERS = ['8.8.8.8', '8.8.4.4']
-    RESOLVER_TIMEOUT = 0.2
+module PortChecker
+  class TCPCheck
+    RESOLVER_NAMESERVERS = ['8.8.8.8', '8.8.4.4']                # TODO: MUST GET FROM APP CONFIG
+    RESOLVER_TIMEOUT = 0.2                                       # TODO: MUST GET FROM APP CONFIG
     RESOLVER = Resolv::DNS.new(nameserver: RESOLVER_NAMESERVERS)
 
     def initialize(host, port, conn_timeout)
@@ -64,7 +64,7 @@ module ActivePinger
       (finish - start) * 1000.0
     end
 
-    def duration
+    def response_time
       time_diff_milli(check[:checked_at], Time.now)
     end
 

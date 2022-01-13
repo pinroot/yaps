@@ -5,7 +5,7 @@ class SimpleTcpPortCheckJob
 
     @last_event = @pinger.events.last
     
-    @checker = ActivePinger::TCP.new(@pinger.address, @pinger.port, @pinger.timeout)
+    @checker = PortChecker::TCPCheck.new(@pinger.address, @pinger.port, @pinger.timeout)
 
     def set_reason
       if @checker.up?
@@ -18,7 +18,7 @@ class SimpleTcpPortCheckJob
     end
 
     if @checker.status != @last_event.status
-      @pinger.events.build(status: @checker.status, reason: set_reason).save 
+      @pinger.events.build(status: @checker.status, reason: set_reason, response_time: @checker.response_time).save
     end
 
     @pinger.update_columns(pinged_at: Time.now)
