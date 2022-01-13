@@ -1,17 +1,23 @@
 require 'socket'
 require 'timeout'
 require 'resolv'
+require 'net/ping'
 
 module PortChecker
   class TCPCheck
     RESOLVER_NAMESERVERS = ['8.8.8.8', '8.8.4.4']                # TODO: MUST GET FROM APP CONFIG
     RESOLVER_TIMEOUT = 0.2                                       # TODO: MUST GET FROM APP CONFIG
     RESOLVER = Resolv::DNS.new(nameserver: RESOLVER_NAMESERVERS)
+    IPV4_REGEX_TEMPLATE = /(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)(\.(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}/
 
     def initialize(host, port, conn_timeout)
       @host         = host
       @port         = port
       @conn_timeout = conn_timeout
+    end
+
+    def is_ip?(address)
+      address.match? IPV4_REGEX_TEMPLATE
     end
 
     def get_ipaddress(fqdn, conn_timeout)
@@ -20,23 +26,14 @@ module PortChecker
     end
 
     def check_port(host, port, conn_timeout)
-      checked_at = Time.now
       begin
-        resolved_host = get_ipaddress(host, RESOLVER_TIMEOUT)
-        socket      = Socket.new(:INET, :STREAM)
-        remote_addr = Socket.sockaddr_in(port, resolved_host)
- 
-        begin
-          socket.connect_nonblock(remote_addr)
-        rescue Errno::EINPROGRESS
-        end
-
-        _, sockets, _ = IO.select(nil, [socket], nil, conn_timeout)
- 
-        if sockets
-          return { status: true, exception: nil, checked_at: checked_at }
+        checked_at = Time.now
+        host = get_ipaddress(host, RESOLVER_TIMEOUT) unless is_ip?(host)
+        check = Net::Ping::TCP.new(host, port, conn_timeout)
+        if check.ping?
+          return { status: true, exception: nil, checked_at: checked_at, response_time: check.ping }
         else
-          return { status: false, exception: "Connection Refused", checked_at: checked_at }
+          return { status: false, exception: check.exception, checked_at: checked_at, response_time: check.ping }
         end
       rescue Resolv::ResolvError => e
         return { status: false, exception: e.to_s, checked_at: checked_at }
@@ -46,7 +43,6 @@ module PortChecker
     def check(host: @host, port: @port, timeout: @conn_timeout)
       check_port(host, port, timeout)
     end
-
 
     def up?
       check[:status]
@@ -65,7 +61,8 @@ module PortChecker
     end
 
     def response_time
-      time_diff_milli(check[:checked_at], Time.now)
+      check[:response_time]
+      #time_diff_milli(check[:checked_at], Time.now)
     end
 
     def status

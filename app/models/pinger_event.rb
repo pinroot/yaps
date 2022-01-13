@@ -6,6 +6,7 @@ class PingerEvent < ApplicationRecord
 
   validate :check_last_status
 
+  # ugly duplicates validation
   def check_last_status
     if status.present? and Pinger.find(pinger_id).pinger_events.last.present?
       if status == Pinger.find(pinger_id).pinger_events.last.status
@@ -13,11 +14,5 @@ class PingerEvent < ApplicationRecord
       end
     end
   end
-
-  #def check_last_status
-  #  if events.last.status == status
-  #    errors.add(:status, 'Somewhing bad')
-  #  end 
-  #end
 
 end

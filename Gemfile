@@ -79,3 +79,4 @@ end
 
 gem 'sucker_punch', '~> 3.0'
 gem 'rufus-scheduler'
+gem 'net-ping'
