@@ -29,11 +29,11 @@ class Pinger < ApplicationRecord
     message: 'must be a FQDN or IP'
   }
 
-  def last_status_downtime
+  def last_downtime_in_words
     distance_of_time_in_words(events.second_to_last.created_at, events.last.created_at)
   end
 
-  def last_status_duration
+  def last_status_duration_in_words
     distance_of_time_in_words(events.second_to_last.created_at, pinged_at)
   end
 
