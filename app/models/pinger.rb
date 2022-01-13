@@ -7,7 +7,7 @@ class Pinger < ApplicationRecord
   after_update :update_pinger_scheduler
   after_destroy :destroy_pinger_scheduler
 
-  enum pinger_type: [ :simple_tcp_port_check, :ping ]
+  enum pinger_type: [ :simple_tcp_port_check, :external_ping ]
 
   has_many :pinger_events, dependent: :destroy
   has_many :events, foreign_key: "pinger_id", class_name: "PingerEvent", dependent: :destroy
@@ -38,6 +38,7 @@ class Pinger < ApplicationRecord
     events.build(status: "created", reason: "Creation successful")
     scheduler = Rufus::Scheduler.singleton.every "#{interval}s", job: true do
       SimpleTcpPortCheckJob.perform_async(id) if pinger_type == "simple_tcp_port_check"
+      ExternalPingJob.perform_async(id) if pinger_type == "external_ping"
     end
     if scheduler
       update_columns(scheduler_job_id: scheduler.job_id)
