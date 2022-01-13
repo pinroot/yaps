@@ -1,4 +1,7 @@
 class Pinger < ApplicationRecord
+  require 'action_view'
+  include ActionView::Helpers::DateHelper
+
   # TODO: GLOBAL SETTINGS
   # 1) MINIMUM\MAXIMUM INTERVAL MUST STORED IN APP SETTINGS
   # 2) STORAGE DEPTH FOR EVENTS (IN DAYS) MUST STORED IN APP SETTINGS
@@ -25,6 +28,14 @@ class Pinger < ApplicationRecord
     multiline: true,
     message: 'must be a FQDN or IP'
   }
+
+  def last_status_downtime
+    distance_of_time_in_words(events.second_to_last.created_at, events.last.created_at)
+  end
+
+  def last_status_duration
+    distance_of_time_in_words(events.second_to_last.created_at, pinged_at)
+  end
 
   def status
     events.last.status
