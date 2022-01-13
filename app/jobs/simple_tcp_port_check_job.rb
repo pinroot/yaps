@@ -5,7 +5,7 @@ class SimpleTcpPortCheckJob
 
     @last_event = @pinger.events.last
     
-    @checker = PortChecker::TCPCheck.new(@pinger.address, @pinger.port, @pinger.timeout)
+    @checker = HostPinger::TCPChecker.new(@pinger.address, @pinger.port, @pinger.timeout)
 
     def set_reason
       if @checker.up?
