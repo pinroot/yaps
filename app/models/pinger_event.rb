@@ -7,6 +7,7 @@ class PingerEvent < ApplicationRecord
   validate :check_last_status
 
   # ugly duplicates validation
+  # TODO: https://blog.kiprosh.com/implement-optimistic-locking-in-rails/
   def check_last_status
     if status.present? and Pinger.find(pinger_id).pinger_events.last.present?
       if status == Pinger.find(pinger_id).pinger_events.last.status
