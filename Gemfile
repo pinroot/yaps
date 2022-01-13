@@ -77,12 +77,5 @@ end
 
 # extra
 
-gem 'net-ping'
 gem 'sucker_punch', '~> 3.0'
 gem 'rufus-scheduler'
-
-# async
-
-gem 'async'
-gem 'async-await'
-gem 'async-io'
