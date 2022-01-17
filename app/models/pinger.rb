@@ -30,7 +30,8 @@ class Pinger < ApplicationRecord
   }
 
   def last_downtime_in_words
-    distance_of_time_in_words(events.second_to_last.created_at, events.last.created_at)
+    # hz
+    #distance_of_time_in_words(events.where(status: "down").all.second_to_last.created_at, events.where(status: "up").all.last.created_at)
   end
 
   def last_status_duration_in_words
@@ -43,6 +44,15 @@ class Pinger < ApplicationRecord
 
   def scheduler
     scheduler = Rufus::Scheduler.singleton.job(scheduler_job_id)
+  end
+
+  # statuses: [ :up, :down, :enabled, :disabled, :created, :unknown ]
+  def uptime
+    last_status_duration_in_words if enabled and status == "up"
+  end
+
+  def downtime
+    last_status_duration_in_words if enabled and status == "down"
   end
 
   def create_pinger_scheduler
