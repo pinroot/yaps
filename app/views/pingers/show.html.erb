@@ -1,0 +1,10 @@
+<p style="color: green"><%= notice %></p>
+
+<%= render @pinger %>
+
+<div>
+  <%= link_to "Edit this pinger", edit_pinger_path(@pinger) %> |
+  <%= link_to "Back to pingers", pingers_path %>
+
+  <%= button_to "Destroy this pinger", @pinger, method: :delete %>
+</div>

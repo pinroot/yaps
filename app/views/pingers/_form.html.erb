@@ -1,0 +1,52 @@
+<%= form_with(model: pinger) do |form| %>
+  <% if pinger.errors.any? %>
+    <div style="color: red">
+      <h2><%= pluralize(pinger.errors.count, "error") %> prohibited this pinger from being saved:</h2>
+
+      <ul>
+        <% pinger.errors.each do |error| %>
+          <li><%= error.full_message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :name, style: "display: block" %>
+    <%= form.text_field :name %>
+  </div>
+
+  <div>
+    <%= form.label :address, style: "display: block" %>
+    <%= form.text_field :address %>
+  </div>
+
+  <div>
+    <%= form.label :interval, style: "display: block" %>
+    <%= form.number_field :interval %>
+  </div>
+
+  <div>
+    <%= form.label :timeout, style: "display: block" %>
+    <%= form.number_field :timeout %>
+  </div>
+
+  <div>
+    <%= form.label :port, style: "display: block" %>
+    <%= form.number_field :port %>
+  </div>
+
+  <div>
+    <%= form.label :pinger_type, style: "display: block" %>
+    <%= form.text_field :pinger_type %>
+  </div>
+
+  <div>
+    <%= form.label :enabled, style: "display: block" %>
+    <%= form.check_box :enabled %>
+  </div>
+
+  <div>
+    <%= form.submit %>
+  </div>
+<% end %>
