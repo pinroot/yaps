@@ -3,12 +3,7 @@
 <h1>Pingers</h1>
 
 <div id="pingers">
-  <% @pingers.each do |pinger| %>
-    <%= render pinger %>
-    <p>
-      <%= link_to "Show this pinger", pinger %>
-    </p>
-  <% end %>
+  <%= render 'table' %>
 </div>
 
 <%= link_to "New pinger", new_pinger_path %>

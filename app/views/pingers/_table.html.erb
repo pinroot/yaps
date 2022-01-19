@@ -1,0 +1,23 @@
+<table class="table">
+  <thead>
+    <th>Name</th>
+    <th>Address</th>
+    <th>Interval</th>
+    <th>Timeout</th>
+    <th>Port</th>
+    <th>Pinger type</th>
+    <th>Enabled</th>
+    <th>Pinged at</th>
+    <th></th>
+  </thead>
+  <tbody>
+    <% @pingers.each do |pinger| %>
+      <tr>
+        <%= render pinger %>
+        <td>
+          <%= link_to "Show this pinger", pinger %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
