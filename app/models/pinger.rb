@@ -1,5 +1,7 @@
 class Pinger < ApplicationRecord
 
+  broadcasts
+
   require 'action_view'
   include ActionView::Helpers::DateHelper
 
