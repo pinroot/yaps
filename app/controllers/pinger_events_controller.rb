@@ -1,0 +1,2 @@
+class PingerEventsController < ApplicationController
+end

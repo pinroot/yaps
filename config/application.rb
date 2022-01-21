@@ -18,5 +18,13 @@ module Yaps
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    config.after_initialize do
+      # if defined?(Rails::Server) && 
+      if ActiveRecord::Base.connection.table_exists?('pingers')
+        Pinger.where(enabled: true).all.each(&:create_pinger_scheduler)
+      end
+    end
+
   end
 end
