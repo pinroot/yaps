@@ -39,4 +39,9 @@
     <%= pinger.status %>
   </p>
 
+  <p>
+    <strong>Pinged At:</strong>
+    <%= time_tag pinger.pinged_at, "data-local": "time-ago" %>
+  </p>
+
 </div>
