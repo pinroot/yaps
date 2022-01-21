@@ -89,6 +89,11 @@ GEM
       reline (>= 0.2.7)
     digest (3.1.0)
     erubi (1.10.0)
+    et-orbi (1.2.6)
+      tzinfo
+    fugit (1.5.2)
+      et-orbi (~> 1.1, >= 1.1.8)
+      raabro (~> 1.4)
     globalid (1.0.0)
       activesupport (>= 5.0)
     i18n (1.8.11)
@@ -118,6 +123,7 @@ GEM
       digest
       net-protocol
       strscan
+    net-ping (2.0.8)
     net-pop (0.1.1)
       digest
       net-protocol
@@ -135,6 +141,7 @@ GEM
     public_suffix (4.0.6)
     puma (5.5.2)
       nio4r (~> 2.0)
+    raabro (1.4.0)
     racc (1.6.0)
     rack (2.2.3)
     rack-test (1.1.0)
@@ -171,6 +178,8 @@ GEM
       io-console (~> 0.5)
     rexml (3.2.5)
     rubyzip (2.3.2)
+    rufus-scheduler (3.8.1)
+      fugit (~> 1.1, >= 1.1.6)
     selenium-webdriver (4.1.0)
       childprocess (>= 0.5, < 5.0)
       rexml (~> 3.2, >= 3.2.5)
@@ -186,6 +195,8 @@ GEM
     stimulus-rails (1.0.2)
       railties (>= 6.0.0)
     strscan (3.0.1)
+    sucker_punch (3.0.1)
+      concurrent-ruby (~> 1.0)
     thor (1.2.1)
     timeout (0.2.0)
     turbo-rails (1.0.1)
@@ -218,12 +229,15 @@ DEPENDENCIES
   debug
   importmap-rails
   jbuilder
+  net-ping
   puma (~> 5.0)
   rails (~> 7.0.1)
+  rufus-scheduler
   selenium-webdriver
   sprockets-rails
   sqlite3 (~> 1.4)
   stimulus-rails
+  sucker_punch (~> 3.0)
   turbo-rails
   tzinfo-data
   web-console

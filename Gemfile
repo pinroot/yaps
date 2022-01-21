@@ -70,3 +70,9 @@ group :test do
   gem "selenium-webdriver"
   gem "webdrivers"
 end
+
+# extra
+
+gem 'sucker_punch', '~> 3.0'
+gem 'rufus-scheduler'
+gem 'net-ping'
